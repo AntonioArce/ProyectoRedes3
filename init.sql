@@ -7,9 +7,6 @@ CREATE TABLE IF NOT EXISTS Usuarios (
   email VARCHAR(40) NOT NULL,
   contrasena VARCHAR(20) NOT NULL,
   is_admin TINYINT(1) NOT NULL,
-  dispositivo VARCHAR(20) NOT NULL, 
+  dispositivo VARCHAR(20) NULL, 
   PRIMARY KEY (id_usuario)
 )
-
-ALTER TABLE Usuarios
-ADD dispositivo VARCHAR(20) NULL;
