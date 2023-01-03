@@ -4,10 +4,10 @@ from flask import Blueprint, jsonify, request
 from config import obtener_conexion
 from netmiko import ConnectHandler
 
-router ={ 
-    'host': '192.168.0.1',
-    'username': 'edgar',
-    'password': 'admin',
+router = { 
+    'host': '10.10.10.2',
+    'username': 'root',
+    'password': 'root',
     "device_type": "cisco_ios"
 }
 
