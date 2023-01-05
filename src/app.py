@@ -3,7 +3,7 @@ from flask import Flask, send_file, request
 from red import Red
 
 #Routes
-from routes import Topologia, Correos, Usuarios
+from routes import Topologia, Correos, Usuarios, rip, ospf, eigrp, BajaProtocolo
 
 app = Flask(__name__)
 
@@ -41,6 +41,10 @@ if __name__ == '__main__':
     # Blueprints
     app.register_blueprint(Usuarios.main,url_prefix = '/api/usuarios')
     #app.register_blueprint(Topologia.main,url_prefix = '/api/topologia')
+    app.register_blueprint(rip.main, url_prefix = '/api/rip')
+    app.register_blueprint(ospf.main, url_prefix = '/api/ospf')
+    app.register_blueprint(eigrp.main, url_prefix = '/api/eigrp')
+    app.register_blueprint(BajaProtocolo.main, url_prefix = '/api/baja-protocolo')
     app.register_blueprint(Correos.main, url_prefix = '/api/correo')
 
     app.register_error_handler(404, page_not_found)

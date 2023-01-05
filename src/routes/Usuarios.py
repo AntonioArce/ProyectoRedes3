@@ -21,7 +21,7 @@ def get_usuarios():
         conexion = obtener_conexion()
         #us = []
         with conexion.cursor() as cursor:
-            cursor.execute("SELECT * from Usuarios")
+            cursor.execute("SELECT * from Usuarios where is_active = 1")
             us = cursor.fetchall()
         conexion.close()
         return jsonify(us)
@@ -43,7 +43,7 @@ def get_usuarios():
             print(out)
             net_connect.send_config_set(["write"])
             with conexion.cursor() as cursor:
-                cursor.execute("INSERT INTO Usuarios(nombre_usuario,email,contrasena,is_admin,dispositivo) VALUES(%s,%s,%s,%s,%s)",
+                cursor.execute("INSERT INTO Usuarios(nombre_usuario,email,contrasena,is_admin,dispositivo,is_active) VALUES(%s,%s,%s,%s,%s,1)",
                 (nombre,email,contrasena,isadmin,dispositivo))
                 cursor.connection.commit()
             return jsonify({"msn":"Usuario comun creado con exito"})
@@ -54,19 +54,34 @@ def get_usuarios():
             print(out)
             net_connect.send_config_set(["write"])
             with conexion.cursor() as cursor:
-                    cursor.execute("INSERT INTO Usuarios(nombre_usuario,email,contrasena,is_admin,dispositivo) VALUES(%s,%s,%s,%s,%s)",
+                    cursor.execute("INSERT INTO Usuarios(nombre_usuario,email,contrasena,is_admin,dispositivo,is_active) VALUES(%s,%s,%s,%s,%s,1)",
                     (nombre,email,contrasena,isadmin,dispositivo))
                     cursor.connection.commit()
             return jsonify({"msn":"Usuario administrador creado con exito"})
 
+@main.route('/<int:id_u>', methods = ['DELETE'])
+def delete_usuario(id_u):
+    name = ''
+    conexion = obtener_conexion()
+    with conexion.cursor() as cursor:
+            cursor.execute("SELECT nombre_usuario from Usuarios where id_usuario = "+ str(id_u))
+            name = cursor.fetchall()
+
+            nombre = ''.join(str(name))
+            print(nombre)
+            new_string = ''.join(char for char in nombre if char.isalnum())
+            print(new_string)
 
 
-"""Hice pruebas aqui de netmiko! jejejeje"""
-@main.route('/prueba', methods = ['GET'])
-def prueba():
-    if request.method == 'GET':
-        net_connect = ConnectHandler(**router)
-        net_connect("conf t")
-        out = net_connect.send_command("int fa 4/1")
-        print(out)
-        return jsonify({"mensaje":"bien"})
+            net_connect = ConnectHandler(**router)
+            net_connect.send_config_set(['no username '+ new_string])
+            net_connect.save_config(cmd = 'write')
+
+            cursor.execute("update Usuarios SET is_active = 0 where id_usuario = "+ str(id_u))
+            cursor.connection.commit()
+            
+            cursor.close()
+
+
+    return jsonify({"msg": "Usuario "+ new_string +" eliminado con exito"})
+
